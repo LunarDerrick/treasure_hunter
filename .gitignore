@@ -1,0 +1,24 @@
+# Ignore build artifacts
+*.exe
+*.out
+*.o
+*.obj
+*.log
+
+# Ignore backup/editor files
+*~
+*.swp
+.DS_Store
+
+# Ignore VSCode settings if project-specific is not intended
+.vscode/
+
+# Ignore temporary files
+tmp/
+build/
+
+# CMake or make build cache artifacts
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
