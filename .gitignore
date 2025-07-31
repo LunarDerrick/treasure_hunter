@@ -11,11 +11,11 @@
 .DS_Store
 
 # Ignore VSCode settings if project-specific is not intended
-.vscode/
+#.vscode/
 
 # Ignore temporary files
 tmp/
-build/
+#build/
 
 # CMake or make build cache artifacts
 CMakeFiles/

@@ -1,0 +1,26 @@
+// "CTRL + SHIFT + B" to run this tasks
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build with SDL3",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "src/main.cpp", // file to be compiled
+                "-I${workspaceFolder}/libs/SDL3-3.2.18/x86_64-w64-mingw32/include",
+                "-L${workspaceFolder}/libs/SDL3-3.2.18/x86_64-w64-mingw32/lib",
+                "-lSDL3",
+                "-o",
+                "build/main.exe" // output to be named
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}
