@@ -15,7 +15,7 @@
 
 # Ignore temporary files
 tmp/
-#build/
+build/
 
 # CMake or make build cache artifacts
 CMakeFiles/
