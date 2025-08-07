@@ -4,24 +4,29 @@
 *.o
 *.obj
 *.log
-
+-
 # Ignore backup/editor files
 *~
 *.swp
 .DS_Store
 
 # Ignore VSCode settings if project-specific is not intended
-.vscode/
+# .vscode/
+# rmb to uncomment
 
 # Ignore temporary files
 tmp/
-build/
+#build/
 
 # CMake or make build cache artifacts
 CMakeFiles/
 CMakeCache.txt
 Makefile
 cmake_install.cmake
+
+# temp
+.cmake/
+compile_commands.json
 
 # ignore demo files
 snake.c
