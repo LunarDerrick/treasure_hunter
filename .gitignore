@@ -11,8 +11,7 @@
 .DS_Store
 
 # Ignore VSCode settings if project-specific is not intended
-# .vscode/
-# rmb to uncomment
+.vscode/
 
 # Ignore temporary files
 tmp/
