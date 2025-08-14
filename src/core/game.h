@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include "../entity./player.h"
+#include "../util/asset_loader.h"
 
 class Game {
 public:
@@ -15,6 +16,10 @@ public:
 private:
     SDL_Window* m_window;
     SDL_Renderer* m_renderer;
+    // entity
     Player* m_player;
     bool m_running;
+    // util
+    asset_loader m_assetLoader;
+    SDL_Texture* m_imgTexture;
 };

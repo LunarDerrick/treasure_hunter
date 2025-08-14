@@ -49,6 +49,14 @@ void asset_loader::unload_texture(const std::string& file_path)
     }
 }
 
+SDL_Texture* asset_loader::get_texture(const std::string& file_path) {
+    auto it = m_textures.find(file_path);
+    if (it != m_textures.end()) {
+        return it->second;
+    }
+    return nullptr;
+}
+
 void asset_loader::clear()
 {
     // Destroy all textures

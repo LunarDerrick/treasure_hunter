@@ -10,6 +10,7 @@ public:
 
     bool load_texture(const std::string& file_path, SDL_Renderer* renderer);
     void unload_texture(const std::string& file_path);
+    SDL_Texture* get_texture(const std::string& file_path);
     void clear();
 
 private:

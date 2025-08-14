@@ -22,6 +22,15 @@ bool Game::Initialize() {
     
     // Create player
     m_player = new Player(400, 300);
+
+    // Load SDL_image functionality
+    if (!m_assetLoader.load_texture("asset/image/gba_icons.png", m_renderer)) {
+        SDL_Log("Failed to load test image, but continuing...");
+        // will resume even if failure
+    } else {
+        m_imgTexture = m_assetLoader.get_texture("asset/image/gba_icons.png");
+        SDL_Log("Image loaded successfully!");
+    }
     
     return true;
 }
@@ -37,6 +46,12 @@ bool Game::Update() {
     m_player->Update();
     m_player->Render(m_renderer);
     
+    // Draw test image if available
+    if (m_imgTexture) {
+        SDL_FRect dest = {100.0f, 100.0f, 64.0f, 64.0f};
+        SDL_RenderTexture(m_renderer, m_imgTexture, NULL, &dest);
+    }
+
     // Present rendered frame
     SDL_RenderPresent(m_renderer);
 
