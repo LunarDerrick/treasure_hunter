@@ -1,4 +1,5 @@
 #include "player.h"
+#include "../scene/zone.h"
 
 Player::Player(float x, float y) 
     : m_x(x), m_y(y), m_speed(5.0f), m_size(30), 
@@ -13,6 +14,10 @@ Player::~Player() {
 }
 
 void Player::Update() {
+    // Store old position for collision resolution
+    float oldX = m_x;
+    float oldY = m_y;
+
     // Update position based on movement flags
     if (m_moveUp) m_y -= m_speed;
     if (m_moveDown) m_y += m_speed;
@@ -24,6 +29,59 @@ void Player::Update() {
     if (m_x > 800 - m_size) m_x = 800 - m_size;
     if (m_y < 0) m_y = 0;
     if (m_y > 600 - m_size) m_y = 600 - m_size;
+}
+
+void Player::CheckZoneCollision(Zone* zone) {
+    if (!zone) return;
+    
+    // Get current bounds
+    SDL_FRect playerBounds = GetBounds();
+    
+    // Check for collision
+    if (zone->CheckCollision(playerBounds.x, playerBounds.y, 
+                            playerBounds.w, playerBounds.h)) {
+        // Handle collision by pushing player out of zone
+        
+        // Simple resolution: Check each edge and push out from closest one
+        // Calculate overlap on all sides
+        float leftOverlap = (zone->GetBounds().x + zone->GetBounds().w) - m_x;
+        float rightOverlap = (m_x + m_size) - zone->GetBounds().x;
+        float topOverlap = (zone->GetBounds().y + zone->GetBounds().h) - m_y;
+        float bottomOverlap = (m_y + m_size) - zone->GetBounds().y;
+        
+        // Find minimum overlap
+        float minOverlap = leftOverlap;
+        int direction = 0; // 0=left, 1=right, 2=top, 3=bottom
+        
+        if (rightOverlap < minOverlap) {
+            minOverlap = rightOverlap;
+            direction = 1;
+        }
+        if (topOverlap < minOverlap) {
+            minOverlap = topOverlap;
+            direction = 2;
+        }
+        if (bottomOverlap < minOverlap) {
+            minOverlap = bottomOverlap;
+            direction = 3;
+        }
+        
+        // Push player out based on minimum overlap
+        switch (direction) {
+            case 0: // Left
+                m_x = zone->GetBounds().x + zone->GetBounds().w;
+                break;
+            case 1: // Right
+                m_x = zone->GetBounds().x - m_size;
+                break;
+            case 2: // Top
+                m_y = zone->GetBounds().y + zone->GetBounds().h;
+                break;
+            case 3: // Bottom
+                m_y = zone->GetBounds().y - m_size;
+                break;
+        }
+    }
 }
 
 void Player::Render(SDL_Renderer* renderer) {

@@ -1,10 +1,10 @@
 #include "zone.h"
 
 Zone::Zone(float x, float y, float width, float height)
-    : m_x(x), m_y(y), m_width(width), m_height(height)
+    : m_x(x), m_y(y), m_width(width), m_height(height), m_solid(true)
 {
     // Default color - green semi-transparent
-    m_color = {0, 255, 0, 128};
+    m_color = {24, 94, 23, 128};
 }
 
 Zone::~Zone()
@@ -35,6 +35,19 @@ void Zone::Render(SDL_Renderer* renderer)
     // Restore previous renderer state
     SDL_SetRenderDrawColor(renderer, previousColor.r, previousColor.g, 
                           previousColor.b, previousColor.a);
+}
+
+bool Zone::CheckCollision(float x, float y, float width, float height) const {
+    // Check if rectangles overlap
+    return (m_x < x + width &&
+            m_x + m_width > x &&
+            m_y < y + height &&
+            m_y + m_height > y);
+}
+
+bool Zone::IsPointInside(float x, float y) const {
+    return (x >= m_x && x <= m_x + m_width &&
+            y >= m_y && y <= m_y + m_height);
 }
 
 void Zone::HandleEvent(const SDL_Event* event)

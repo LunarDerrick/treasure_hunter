@@ -1,6 +1,7 @@
 #include "game.h"
 
-Game::Game() : m_window(nullptr), m_renderer(nullptr), m_player(nullptr), m_running(true) {
+Game::Game() : m_window(nullptr), m_renderer(nullptr), m_player(nullptr), 
+               m_zone(nullptr), m_imgTexture(nullptr), m_running(true) {
     // m_running is boolean to check whether application is active or offline.
 }
 
@@ -23,6 +24,9 @@ bool Game::Initialize() {
     // Create player
     m_player = new Player(400, 300);
 
+    // Create zone
+    m_zone = new Zone(200, 200, 200, 150);
+
     // Load SDL_image functionality
     if (!m_assetLoader.load_texture("asset/image/gba_icons.png", m_renderer)) {
         SDL_Log("Failed to load test image, but continuing...");
@@ -41,7 +45,16 @@ bool Game::Update() {
     // Clear screen
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
     SDL_RenderClear(m_renderer);
-    
+
+    if (m_zone) {
+        // Check for collisions with zone
+        m_player->CheckZoneCollision(m_zone);
+        
+        // Update and render zone first (so it appears behind player)
+        m_zone->Update();
+        m_zone->Render(m_renderer);
+    }
+
     // Update and render player
     m_player->Update();
     m_player->Render(m_renderer);
@@ -78,11 +91,21 @@ bool Game::HandleEvent(const SDL_Event* event) {
     
     // Let player handle events
     m_player->HandleEvent(event);
+
+    // Let zone handle events
+    if (m_zone) {
+        m_zone->HandleEvent(event);
+    }
     
     return true;
 }
 
 void Game::Cleanup() {
+    if (m_zone) {
+        delete m_zone;
+        m_zone = nullptr;
+    }
+
     if (m_player) {
         delete m_player;
         m_player = nullptr;

@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
+class Zone;
 
 class Player {
 public:
@@ -9,6 +10,11 @@ public:
     void Update();
     void Render(SDL_Renderer* renderer);
     void HandleEvent(const SDL_Event* event);
+
+    // Add collision handling
+    void CheckZoneCollision(Zone* zone);
+    // Add getter for bounds
+    SDL_FRect GetBounds() const { return {m_x, m_y, (float)m_size, (float)m_size}; }
     
 private:
     float m_x, m_y;
