@@ -20,7 +20,7 @@ tmp/
 # CMake or make build cache artifacts
 CMakeFiles/
 CMakeCache.txt
-Makefile
+build/Makefile
 cmake_install.cmake
 build/asset
 

@@ -28,10 +28,12 @@ set(ENTITY_SOURCES
 
 set(SCENE_SOURCES
     "src/scene/zone.cpp"
+    "src/scene/zone.h"
 )
 
 set(UTIL_SOURCES
     "src/util/asset_loader.cpp"
+    "src/util/asset_loader.h"
 )
 
 # Set files used to compile
@@ -47,11 +49,18 @@ set(SOURCES
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Declare external library
-set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/SDL3-3.2.18") # initialize filepath
+set(CMAKE_PREFIX_PATH 
+    "${CMAKE_CURRENT_SOURCE_DIR}/libs/SDL3-3.2.18"
+    "${CMAKE_CURRENT_SOURCE_DIR}/libs/SDL3_image-3.2.4"
+) # initialize filepath
 find_package(SDL3 REQUIRED) # locate "%SDL3%.cmake" files
+find_package(SDL3_image REQUIRED)
 
 # Include external library
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3) # utilize library (list of "%SDL3%" files/classes)
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+    SDL3::SDL3
+    SDL3_image::SDL3_image
+) # utilize library (list of "%SDL3%" files/classes)
 
 # Copy important data files to build
 add_custom_target(
@@ -60,7 +69,10 @@ add_custom_target(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:SDL3::SDL3>
         $<TARGET_FILE_DIR:${PROJECT_NAME}>
-    COMMENT "Adding .dll file to build"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:SDL3_image::SDL3_image>
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    COMMENT "Adding .dll files to build"
 )
 
 # Copy game assets to build directory
