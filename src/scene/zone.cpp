@@ -18,8 +18,14 @@ void Zone::Update()
     // For example, animations, state changes, etc.
 }
 
-void Zone::Render(SDL_Renderer* renderer)
+void Zone::Render(SDL_Renderer* renderer, float scale, int offset_x, int offset_y)
 {
+    // Scale up variables first
+    float scaled_x = offset_x + m_x * scale;
+    float scaled_y = offset_y + m_y * scale;
+    float scaled_width = m_width * scale;
+    float scaled_height = m_height * scale;
+
     // Save current renderer state
     SDL_Color previousColor;
     SDL_GetRenderDrawColor(renderer, &previousColor.r, &previousColor.g, 
@@ -29,7 +35,7 @@ void Zone::Render(SDL_Renderer* renderer)
     SDL_SetRenderDrawColor(renderer, m_color.r, m_color.g, m_color.b, m_color.a);
     
     // Draw zone as a rectangle
-    SDL_FRect rect = {m_x, m_y, m_width, m_height};
+    SDL_FRect rect = {scaled_x, scaled_y, scaled_width, scaled_height};
     SDL_RenderFillRect(renderer, &rect);
     
     // Restore previous renderer state

@@ -1,8 +1,9 @@
-#include "player.h"
+#include "../entity/player.h"
 #include "../scene/zone.h"
+#include "../core/game.h"
 
 Player::Player(float x, float y) 
-    : m_x(x), m_y(y), m_speed(5.0f), m_size(30), 
+    : m_x(x), m_y(y), m_speed(5.0f), m_size(30), m_sprite(nullptr),
       m_moveUp(false), m_moveDown(false), m_moveLeft(false), m_moveRight(false) {
     // m_speed use 'f' notation to use single precision value (32-bit), more resource-saving
     // Set player color to blue
@@ -10,7 +11,11 @@ Player::Player(float x, float y)
 }
 
 Player::~Player() {
-    // Nothing to clean up
+    // We don't own the sprite texture, so don't delete it
+}
+
+void Player::SetSprite(SDL_Texture* sprite) {
+    m_sprite = sprite;
 }
 
 void Player::Update() {
@@ -26,9 +31,9 @@ void Player::Update() {
     
     // Simple boundary checking to keep player on screen
     if (m_x < 0) m_x = 0;
-    if (m_x > 800 - m_size) m_x = 800 - m_size;
+    if (m_x > Game::VIRTUAL_WIDTH - m_size) m_x = Game::VIRTUAL_WIDTH - m_size;
     if (m_y < 0) m_y = 0;
-    if (m_y > 600 - m_size) m_y = 600 - m_size;
+    if (m_y > Game::VIRTUAL_HEIGHT - m_size) m_y = Game::VIRTUAL_HEIGHT - m_size;
 }
 
 void Player::CheckZoneCollision(Zone* zone) {
@@ -84,13 +89,22 @@ void Player::CheckZoneCollision(Zone* zone) {
     }
 }
 
-void Player::Render(SDL_Renderer* renderer) {
-    // Set draw color to player color
-    SDL_SetRenderDrawColor(renderer, m_color.r, m_color.g, m_color.b, m_color.a);
+void Player::Render(SDL_Renderer* renderer, float scale, int offset_x, int offset_y) {
+    // Scale up variables first
+    float scaled_x = offset_x + m_x * scale;
+    float scaled_y = offset_y + m_y * scale;
+    float scaled_size = m_size * scale;
     
-    // Draw player as a rectangle
-    SDL_FRect rect = {m_x, m_y, (float)m_size, (float)m_size};
-    SDL_RenderFillRect(renderer, &rect);
+    if (m_sprite) {
+        // Draw player sprite
+        SDL_FRect dest = {scaled_x, scaled_y, scaled_size, scaled_size};
+        SDL_RenderTexture(renderer, m_sprite, NULL, &dest);
+    } else {
+        // Fallback: Draw player as a rectangle if no sprite
+        SDL_SetRenderDrawColor(renderer, m_color.r, m_color.g, m_color.b, m_color.a);
+        SDL_FRect rect = {scaled_x, scaled_y, scaled_size, scaled_size};
+        SDL_RenderFillRect(renderer, &rect);
+    }
 }
 
 void Player::HandleEvent(const SDL_Event* event) {

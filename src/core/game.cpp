@@ -1,7 +1,8 @@
 #include "game.h"
 
 Game::Game() : m_window(nullptr), m_renderer(nullptr), m_player(nullptr), 
-               m_zone(nullptr), m_imgTexture(nullptr), m_running(true) {
+               m_zone(nullptr), m_running(true), 
+               m_imgTexture(nullptr), m_backgroundTexture(nullptr) {
     // m_running is boolean to check whether application is active or offline.
 }
 
@@ -11,7 +12,7 @@ Game::~Game() {
 
 bool Game::Initialize() {
     // Create window and renderer
-    SDL_CreateWindowAndRenderer("Treasure Hunter", 800, 600, SDL_WINDOW_RESIZABLE, &m_window, &m_renderer);
+    SDL_CreateWindowAndRenderer("Treasure Hunter", 1280, 720, SDL_WINDOW_RESIZABLE, &m_window, &m_renderer);
     if (!m_window || !m_renderer) {
         SDL_Log("Window or renderer creation failed: %s", SDL_GetError());
         return false;
@@ -28,12 +29,24 @@ bool Game::Initialize() {
     m_zone = new Zone(200, 200, 200, 150);
 
     // Load SDL_image functionality
-    if (!m_assetLoader.load_texture("asset/image/gba_icons.png", m_renderer)) {
+    // 1. player sprite
+    if (!m_assetLoader.load_texture("asset/image/book.png", m_renderer)) {
         SDL_Log("Failed to load test image, but continuing...");
         // will resume even if failure
     } else {
-        m_imgTexture = m_assetLoader.get_texture("asset/image/gba_icons.png");
+        m_imgTexture = m_assetLoader.get_texture("asset/image/book.png");
         SDL_Log("Image loaded successfully!");
+
+        // Set the book sprite for the player
+        m_player->SetSprite(m_imgTexture);
+    }
+
+    // 2. background asset
+    if (!m_assetLoader.load_texture("asset/image/forest.png", m_renderer)) {
+        SDL_Log("Failed to load background image, but continuing...");
+    } else {
+        m_backgroundTexture = m_assetLoader.get_texture("asset/image/forest.png");
+        SDL_Log("Background image loaded successfully!");
     }
     
     return true;
@@ -46,24 +59,42 @@ bool Game::Update() {
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
     SDL_RenderClear(m_renderer);
 
+    // Get window size for fullscreen background
+    int width, height;
+    SDL_GetWindowSize(m_window, &width, &height);
+
+    // Scale factor
+    float scale = std::min(
+        width / static_cast<float>(VIRTUAL_WIDTH),
+        height / static_cast<float>(VIRTUAL_HEIGHT)
+    );
+
+    // Determine actual game size without window
+    int render_width = static_cast<int>(VIRTUAL_WIDTH * scale);
+    int render_height = static_cast<int>(VIRTUAL_HEIGHT * scale);
+
+    // Shifts game to center of screen
+    int offset_x = (width - render_width) / 2;
+    int offset_y = (height - render_height) / 2;
+
+    // Draw background image
+    if (m_backgroundTexture) {
+        SDL_FRect dest = {(float)offset_x, (float)offset_y, (float)render_width, (float)render_height};
+        SDL_RenderTexture(m_renderer, m_backgroundTexture, NULL, &dest);
+    }
+
     if (m_zone) {
         // Check for collisions with zone
         m_player->CheckZoneCollision(m_zone);
         
         // Update and render zone first (so it appears behind player)
         m_zone->Update();
-        m_zone->Render(m_renderer);
+        m_zone->Render(m_renderer, scale, offset_x, offset_y);
     }
 
     // Update and render player
     m_player->Update();
-    m_player->Render(m_renderer);
-    
-    // Draw test image if available
-    if (m_imgTexture) {
-        SDL_FRect dest = {100.0f, 100.0f, 64.0f, 64.0f};
-        SDL_RenderTexture(m_renderer, m_imgTexture, NULL, &dest);
-    }
+    m_player->Render(m_renderer, scale, offset_x, offset_y);
 
     // Present rendered frame
     SDL_RenderPresent(m_renderer);

@@ -7,7 +7,7 @@ public:
     ~Zone();
 
     void Update();
-    void Render(SDL_Renderer* renderer);
+    void Render(SDL_Renderer* renderer, float scale, int offset_x, int offset_y);
     void HandleEvent(const SDL_Event* event);
 
     // Add collision detection

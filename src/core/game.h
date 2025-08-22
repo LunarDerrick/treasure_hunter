@@ -8,7 +8,10 @@ class Game {
 public:
     Game();
     ~Game();
-    
+        
+    static constexpr int VIRTUAL_WIDTH = 1280;
+    static constexpr int VIRTUAL_HEIGHT = 720;
+
     bool Initialize();
     bool Update();
     bool HandleEvent(const SDL_Event* event);
@@ -24,5 +27,7 @@ private:
     Zone* m_zone;
     // util
     asset_loader m_assetLoader;
+    // asset texture
     SDL_Texture* m_imgTexture;
+    SDL_Texture* m_backgroundTexture;
 };

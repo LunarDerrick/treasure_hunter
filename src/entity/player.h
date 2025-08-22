@@ -8,8 +8,9 @@ public:
     ~Player();
     
     void Update();
-    void Render(SDL_Renderer* renderer);
+    void Render(SDL_Renderer* renderer, float scale, int offset_x, int offset_y);
     void HandleEvent(const SDL_Event* event);
+    void SetSprite(SDL_Texture* sprite);
 
     // Add collision handling
     void CheckZoneCollision(Zone* zone);
@@ -21,6 +22,7 @@ private:
     float m_speed;
     int m_size;
     SDL_Color m_color;
+    SDL_Texture* m_sprite;
     
     // Movement direction flags
     bool m_moveUp;
